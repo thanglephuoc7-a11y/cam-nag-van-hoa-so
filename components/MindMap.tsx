@@ -111,7 +111,9 @@ const MindMap: React.FC = () => {
                                         className="w-full h-full flex flex-col items-center justify-center text-white font-bold text-center select-none"
                                         style={{ transform: isHovered ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.2s ease-out' }}
                                     >
-                                        <Icon style={{width: `${node.r * iconSizeRatio * 2}px`, height: `${node.r * iconSizeRatio * 2}px`}} />
+                                        <div style={{width: `${node.r * iconSizeRatio * 2}px`, height: `${node.r * iconSizeRatio * 2}px`}}>
+                                            <Icon className="w-full h-full" />
+                                        </div>
                                         <span className="mt-1 px-1" style={{ fontSize: '11px', transform: `translateY(${textYOffset}px)` }}>{t(node.labelKey)}</span>
                                     </div>
                                 </foreignObject>

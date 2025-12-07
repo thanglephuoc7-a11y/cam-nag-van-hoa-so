@@ -59,14 +59,27 @@ You MUST return a valid JSON object with the following structure. Do not add any
 
 // FIX: Added missing function getScenarioAdvice
 export const getScenarioAdvice = async (scenario: Scenario, option: ScenarioOption): Promise<ScenarioResult> => {
+    // 1. Check if local feedback exists (Fastest & works offline)
+    const localFeedback = scenario.feedback_per_option?.[option.id];
+    if (localFeedback) {
+         return {
+             ethical_analysis: localFeedback.ethical,
+             legal_analysis: localFeedback.legal,
+             recommended_action: localFeedback.recommended_action,
+             positive_alternative: localFeedback.positive_alternative || "Hãy luôn suy nghĩ kỹ về hậu quả trước khi hành động trên mạng xã hội.",
+             severity_score: localFeedback.severity_score || 1,
+             citations: localFeedback.law_refs.map(ref => ({ title: "Quy định pháp luật liên quan", excerpt: ref }))
+         };
+    }
+
     if (!API_KEY) {
-        // Mock response for development if no API key
+        // Mock response for development if no API key and no local data (unlikely for built-in scenarios)
         await new Promise(resolve => setTimeout(resolve, 1000));
         return {
             ethical_analysis: "Đây là phân tích đạo đức mẫu. Hành động này có thể ảnh hưởng đến cảm xúc của người khác.",
             legal_analysis: "Đây là phân tích pháp lý mẫu. Cần xem xét các quy định về quyền riêng tư.",
             recommended_action: "Đây là hành động đề xuất mẫu. Lần sau, hãy cân nhắc kỹ hơn trước khi hành động.",
-            positive_alternative: "Đây là gợi ý tích cực mẫu. Thay vì hành động như vậy, bạn có thể chọn một cách tiếp cận khác mang tính xây dựng hơn, ví dụ như nói chuyện trực tiếp với bạn của mình.",
+            positive_alternative: "Đây là gợi ý tích cực mẫu. Thay vì hành động như vậy, bạn có thể chọn một cách tiếp cận khác mang tính xây dựng hơn.",
             severity_score: 5,
             citations: [
                 { title: "Nguyên tắc cộng đồng", excerpt: "Luôn tôn trọng người khác trên không gian mạng." }
@@ -126,7 +139,7 @@ export const getScenarioAdvice = async (scenario: Scenario, option: ScenarioOpti
 
 export const getChatAdvice = async (history: ChatMessage[]): Promise<string> => {
   if (!API_KEY) {
-      return "Đây là câu trả lời mẫu từ AI. Vui lòng cấu hình API key để nhận tư vấn thực tế.";
+      return "Chức năng chat AI cần có API Key để hoạt động. Vui lòng thử lại sau hoặc sử dụng các chức năng khác của ứng dụng.";
   }
   
   const contents = history.map(msg => ({

@@ -74,6 +74,9 @@ export interface Scenario {
       legal: string;
       recommended_action: string;
       law_refs: string[];
+      // Added fields to support local fallback data matching ScenarioResult
+      positive_alternative?: string;
+      severity_score?: number;
     };
   };
 }
