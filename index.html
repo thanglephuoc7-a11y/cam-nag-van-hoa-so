@@ -52,6 +52,12 @@
         }
       }
     </style>
+    <!-- Babel Standalone for in-browser JSX/TS transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script>
+      // Polyfill process.env to avoid runtime errors in browser and support env var injection
+      window.process = window.process || { env: {} };
+    </script>
   <script type="importmap">
 {
   "imports": {
@@ -65,6 +71,6 @@
 </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="text/babel" data-type="module" data-presets="react,typescript" src="/index.tsx"></script>
   </body>
 </html>

@@ -1,16 +1,17 @@
-
 // FIX: Add Type to imports for responseSchema
 import { GoogleGenAI, Type } from "@google/genai";
 // FIX: Import missing scenario types
 import type { ChatMessage, Scenario, ScenarioOption, ScenarioResult } from '../types';
 
-const API_KEY = process.env.API_KEY;
+// Support both process.env (Node/Netlify Build) and import.meta.env (Vite)
+const API_KEY = process.env.API_KEY || (import.meta as any).env?.VITE_API_KEY;
 
 if (!API_KEY) {
-  console.warn("API key not found. Please set the API_KEY environment variable.");
+  console.warn("API key not found. Please set the API_KEY environment variable in Netlify.");
 }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
+// Initialize AI only if key exists to prevent immediate crash, handle null key gracefully in calls
+const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
 const chatSystemPrompt = `
 Bạn là một chuyên gia tư vấn AI thân thiện, am hiểu về văn hóa số, đạo đức và pháp luật trên mạng, chuyên giải đáp thắc mắc cho học sinh THPT.
@@ -72,12 +73,12 @@ export const getScenarioAdvice = async (scenario: Scenario, option: ScenarioOpti
          };
     }
 
-    if (!API_KEY) {
+    if (!ai) {
         // Mock response for development if no API key and no local data (unlikely for built-in scenarios)
         await new Promise(resolve => setTimeout(resolve, 1000));
         return {
-            ethical_analysis: "Đây là phân tích đạo đức mẫu. Hành động này có thể ảnh hưởng đến cảm xúc của người khác.",
-            legal_analysis: "Đây là phân tích pháp lý mẫu. Cần xem xét các quy định về quyền riêng tư.",
+            ethical_analysis: "Đây là phân tích đạo đức mẫu (Chế độ offline). Hành động này có thể ảnh hưởng đến cảm xúc của người khác.",
+            legal_analysis: "Đây là phân tích pháp lý mẫu (Chế độ offline). Cần xem xét các quy định về quyền riêng tư.",
             recommended_action: "Đây là hành động đề xuất mẫu. Lần sau, hãy cân nhắc kỹ hơn trước khi hành động.",
             positive_alternative: "Đây là gợi ý tích cực mẫu. Thay vì hành động như vậy, bạn có thể chọn một cách tiếp cận khác mang tính xây dựng hơn.",
             severity_score: 5,
@@ -138,8 +139,8 @@ export const getScenarioAdvice = async (scenario: Scenario, option: ScenarioOpti
 };
 
 export const getChatAdvice = async (history: ChatMessage[]): Promise<string> => {
-  if (!API_KEY) {
-      return "Chức năng chat AI cần có API Key để hoạt động. Vui lòng thử lại sau hoặc sử dụng các chức năng khác của ứng dụng.";
+  if (!ai) {
+      return "Chức năng chat AI cần có API Key để hoạt động. Vui lòng thiết lập biến môi trường API_KEY trong Netlify hoặc sử dụng các chức năng Offline của ứng dụng.";
   }
   
   const contents = history.map(msg => ({
