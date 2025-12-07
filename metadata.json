@@ -1,0 +1,7 @@
+{
+  "name": "Cẩm Nang Văn Hóa Số",
+  "description": "Một ứng dụng web PWA tích hợp AI để tư vấn về Đạo đức và Pháp luật trên không gian mạng cho học sinh THPT, giúp nâng cao nhận thức và hành vi văn hóa số.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
